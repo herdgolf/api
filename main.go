@@ -5,6 +5,7 @@ import (
 
 	"github.com/herdgolf/api/db"
 	"github.com/herdgolf/api/handlers"
+	"github.com/herdgolf/api/handlers/api"
 	"github.com/labstack/echo/v4"
 )
 
@@ -26,32 +27,41 @@ func main() {
 			"hello": "world",
 		})
 	})
-	userRoute := e.Group("/player")
-	userRoute.POST("/", handlers.CreatePlayerHandler)
-	userRoute.GET("/:id", handlers.GetPlayerHandler)
-	userRoute.PUT("/:id", handlers.UpdatePlayerHandler)
-	userRoute.DELETE("/:id", handlers.DeletePlayerHandler)
 
-	scoreCardRoute := e.Group("/scorecard")
-	scoreCardRoute.POST("/", handlers.CreateScoreCardHandler)
-	scoreCardRoute.GET("/:id", handlers.GetScoreCardHandler)
-	scoreCardRoute.GET("/:id/holes", handlers.GetHolesByScoreCardID)
-	scoreCardRoute.GET("/:score_card_id/holes/:number", handlers.GetHoleByNumberAndScoreCardID)
-	scoreCardRoute.PUT("/:id", handlers.UpdateScoreCardHandler)
-	scoreCardRoute.PUT("/score", handlers.AddScoreToScoreCardHandler)
+	e.Static("/", "assets")
+	playerRoute := e.Group("/player")
+	playerRoute.GET("/", handlers.GetPlayersHandler)
+	playerRoute.GET("/details/:id", handlers.GetPlayerDetailsHandler)
 
-	courseRoute := e.Group("/course")
-	courseRoute.POST("/", handlers.CreateCourseHandler)
-	courseRoute.GET("/:id", handlers.GetCourseHandler)
-	courseRoute.GET("/:id/holes", handlers.GetHolesByCourseIDHandler)
-	courseRoute.GET("/:id/holes/:number", handlers.GetHoleByNumberHandler)
-	courseRoute.PUT("/:id/holes/:number", handlers.UpdateHoleHandler)
-	courseRoute.PUT("/:id", handlers.UpdateCourseHandler)
-	courseRoute.DELETE("/:id", handlers.DeleteCourseHandler)
+	userRoute := e.Group("/api/player")
+	userRoute.POST("/", api.CreatePlayerHandler)
+	userRoute.GET("/:id", api.GetPlayerHandler)
+	userRoute.GET("/", api.GetPlayersHandler)
+	userRoute.PUT("/:id", api.UpdatePlayerHandler)
+	userRoute.DELETE("/:id", api.DeletePlayerHandler)
 
-	roundRoute := e.Group("/round")
-	roundRoute.POST("/", handlers.CreateRoundHandler)
-	roundRoute.GET("/:id", handlers.GetRoundHandler)
+	scoreCardRoute := e.Group("/api/scorecard")
+	scoreCardRoute.POST("/", api.CreateScoreCardHandler)
+	scoreCardRoute.GET("/", api.GetScoreCardsHandler)
+	scoreCardRoute.GET("/:id", api.GetScoreCardHandler)
+	scoreCardRoute.GET("/:id/holes", api.GetHolesByScoreCardID)
+	scoreCardRoute.GET("/:score_card_id/holes/:number", api.GetHoleByNumberAndScoreCardID)
+	scoreCardRoute.PUT("/:id", api.UpdateScoreCardHandler)
+	scoreCardRoute.PUT("/score", api.AddScoreToScoreCardHandler)
+
+	courseRoute := e.Group("/api/course")
+	courseRoute.POST("/", api.CreateCourseHandler)
+	courseRoute.GET("/:id", api.GetCourseHandler)
+	courseRoute.GET("/", api.GetCoursesHandler)
+	courseRoute.GET("/:id/holes", api.GetHolesByCourseIDHandler)
+	courseRoute.GET("/:id/holes/:number", api.GetHoleByNumberHandler)
+	courseRoute.PUT("/:id/holes/:number", api.UpdateHoleHandler)
+	courseRoute.PUT("/:id", api.UpdateCourseHandler)
+	courseRoute.DELETE("/:id", api.DeleteCourseHandler)
+
+	roundRoute := e.Group("/api/round")
+	roundRoute.POST("/", api.CreateRoundHandler)
+	roundRoute.GET("/:id", api.GetRoundHandler)
 
 	e.Logger.Fatal(e.Start(":8080"))
 }
